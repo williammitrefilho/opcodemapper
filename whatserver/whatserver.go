@@ -37,6 +37,7 @@ func Handler(Writer http.ResponseWriter, Request *http.Request){
 			}
 			fmt.Printf("%v read bytes:", nReadBytes)
 			os.Stdout.Write(buffer)
+			fmt.Println()
 			
 			err = json.Unmarshal(buffer, Commander);
 			if(err != nil){
