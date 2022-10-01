@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Página teste</title>
+		<script type="text/javascript">
+			function didLoad(){
+				
+				document.getElementById("json-form").onsubmit = function(e){
+					
+					e.preventDefault();
+					var xhr = new XMLHttpRequest();
+					xhr.open("POST", "/");
+					xhr.setRequestHeader("Content-type", "application/json");
+					
+					xhr.send(JSON.stringify({code:this.elements[0].value}));
+//					xhr.send("");
+				}
+			}
+		</script>
+	</head>
+	<body onload="didLoad()">
+		<form id="json-form" method="POST">
+			<table>
+				<tr>
+					<td><input type="text" name="byte_value"></td>
+				</tr>
+				<tr>
+					<td><button type="submit">Send</button></td>
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>
