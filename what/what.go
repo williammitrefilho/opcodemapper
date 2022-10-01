@@ -1,71 +1,37 @@
 package what
 
-const(
+type Error struct{
 	
-	TYPE_MODRM int = 1
-	TYPE_OPCODE = 2
-	TYPE_EXT_PREFIX = 3
+	Message string
+}
+type InstructionByteStream struct{
 	
-	OP_TYPE_IMM = 1
-	OP_TYPE_REG = 2
-	OP_TYPE_MEM = 3
-)
-
-type InstructionByte struct{
-	
-	Value byte
-	Type int
-	Instructions []*Instruction
+	bytes []byte
+	index int
 }
 
-type Instruction struct{
+func (istr *InstructionByteStream) ReadBytes(n int) ([]byte, *Error){
 	
-	Bytes []*InstructionByte
-	OperandSpec1 *OperandSpec
-	OperandSpec2 *OperandSpec
-}
-
-type OperandSpec struct{
-	
-	Type int
-	Size int
-}
-
-type ByteValue struct{
-	
-	InstructionName string
-	NextByteValue *OpcodeMapper
-}
-
-type InstructionByteMap map[uint8]InstructionByte
-
-type InstructionByteMapper struct{
-	
-	InsMap InstructionByteMap
-}
-
-func New() *InstructionByteMapper{
-	
-	Mb := new(InstructionByteMapper)
-	Mb.OpMap = make(InstructionByteMap)
-	return Mb
-}
-
-func NewInstruction() *Instruction{
-	
-	return new(Instruction)
-}
-
-func (m *InstructionByteMapper)AddEntry(instrByte InstructionByte, instruction Instruction){
-	
-	presentInstr := Lookup(instrByte)
-	if(presentInstr == nil){
+	if (istr.index + n) > len(istr.bytes){
 		
-		m.InsMap[instrByte.Value] = instrByte
+		return nil, NewError("Out of bounds")
 	}
+	rBytes := istr.bytes[istr.index:(istr.index + n)]
+	return rBytes, nil
 }
 
-func (m *InstructionByteMapper)Lookup(instrByte InstructionByte) InstructionByte{
+func NewError(msg string) *Error{
 	
-	return m.InsMap[instrByte.Value]
+	err := new(Error)
+	err.Message = msg
+	return err
+}
+
+func NewInstructionByteStream(bytes []byte) *InstructionByteStream{
+	
+	istr := new(InstructionByteStream)
+	istr.index = 0
+	istr.bytes = bytes
+	
+	return istr
 }

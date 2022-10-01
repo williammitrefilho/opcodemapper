@@ -29,15 +29,8 @@ func toBytes(String string)[]byte{
 	return bytes[:nBytes]
 }
 
-func Disassemble(code string) []*what.Instruction{
+func Disassemble(code string){
 	
-	bytes := toBytes(code)
-	var instrs [128]*what.Instruction
-	instr := what.NewInstruction()
-	instrs[0] = instr
-	for _, b := range bytes{
-		
-		fmt.Printf("%x\n", b)
-	}
-	return instrs[:0]
+	istr := what.NewInstructionByteStream(toBytes(code))
+	fmt.Printf("%v\n", istr)
 }

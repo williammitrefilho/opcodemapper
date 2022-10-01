@@ -2,7 +2,7 @@ package commander
 
 import(
 //	"fmt"
-	"modgo.com/what"
+//	"modgo.com/what"
 	"log"
 	"regexp"
 	"modgo.com/disassembler"
@@ -32,7 +32,7 @@ func Error(Message string) *CommanderError{
 	return cmdErr
 }
 
-func (c *Commander) EvaluateCode() ([]*what.Instruction, *CommanderError){
+func (c *Commander) EvaluateCode() *CommanderError{
 	
 	anyIntruder, err := regexp.MatchString("[^0-9A-Fa-f]", c.Code)
 	if err != nil{
@@ -41,21 +41,21 @@ func (c *Commander) EvaluateCode() ([]*what.Instruction, *CommanderError){
 	}
 	if anyIntruder{
 		
-		return nil, Error("There is an intruder")
+		return Error("There is an intruder")
 	}
 	if (len(c.Code) % 2) > 0{
 		
-		return nil, Error("Could you please 8-bit align?")
+		return Error("Could you please 8-bit align?")
 	}
-	instrs := disassembler.Disassemble(c.Code)
-	return instrs, nil
+	disassembler.Disassemble(c.Code)
+	return nil
 }
 
 func (c *Commander) Run() *CommanderResponse{
 	
 	if c.Code != ""{
 		
-		instrs, cmdErr := c.EvaluateCode()
+		cmdErr := c.EvaluateCode()
 		cr := new(CommanderResponse)
 		if(cmdErr != nil){
 			
@@ -64,7 +64,6 @@ func (c *Commander) Run() *CommanderResponse{
 			return cr
 		}
 		cr.ResultClass = "OK"
-		cr.Value = instrs
 		return cr
 	}
 	
