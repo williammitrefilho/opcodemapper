@@ -10,12 +10,12 @@ import(
 
 func Listen(handler func(http.ResponseWriter, *http.Request)){
 	
-	certPem, err := os.ReadFile("C:/opcodemapper/whatserver/O=Acme Co.crt")
+	certPem, err := os.ReadFile("C:/opcodemapper/O=Acme Co.crt")
 	if err != nil{
 		
 		log.Fatal(err)
 	}
-	keyPem, err := os.ReadFile("C:/opcodemapper/whatserver/key.k")
+	keyPem, err := os.ReadFile("C:/opcodemapper/key.k")
 	if err != nil{
 		
 		log.Fatal(err)
