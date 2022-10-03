@@ -5,14 +5,14 @@ For disassembly:
 *POST* request body:
 ```json
 {
-	code:"6858AC4000E8EEFFFFFF"
+	"code":"6858AC4000E8EEFFFFFF"
 }
 ```
 
 response:
 ```json
 {
-	code:[
+	"code":[
 		"PUSH 0x0040AC58",
 		"CALL [RIP] + 0xFFFFFFEE"
 	]
