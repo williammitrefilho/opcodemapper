@@ -1,8 +1,8 @@
-#An x86-64 assembler/disassembler
+# An x86-64 assembler/disassembler
 
 For disassembly:
 
-*POST* request body:
+**POST** request body:
 ```json
 {
 	"code":"6858AC4000E8EEFFFFFF"
