@@ -1,9 +1,10 @@
 package disassembler
 
 import (
-	"modgo.com/what"
+//	"modgo.com/what"
 	"strings"
-	"fmt"
+//	"fmt"
+//	"modgo.com/amd64"
 )
 
 func toBytes(String string)[]byte{
@@ -31,6 +32,6 @@ func toBytes(String string)[]byte{
 
 func Disassemble(code string){
 	
-	istr := what.NewInstructionByteStream(toBytes(code))
-	fmt.Printf("%v\n", istr)
+//	istr := what.NewInstructionByteStream(toBytes(code))
+//	fmt.Printf("%v\n", istr)
 }

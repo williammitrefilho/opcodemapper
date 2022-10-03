@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	modgo.com/amd64 v0.0.0-00010101000000-000000000000 // indirect
 	modgo.com/commander v0.0.0-00010101000000-000000000000 // indirect
 	modgo.com/disassembler v0.0.0-00010101000000-000000000000 // indirect
 	modgo.com/what v0.0.0-00010101000000-000000000000 // indirect
@@ -24,3 +25,5 @@ replace modgo.com/whatserver => /whatserver
 replace modgo.com/commander => /commander
 
 replace modgo.com/disassembler => /disassembler
+
+replace modgo.com/amd64 => /amd64
