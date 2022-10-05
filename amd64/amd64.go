@@ -2,9 +2,9 @@ package amd64_1
 
 import(
 	
-//	"fmt"
+	"fmt"
 //	"log"
-//	"errors"
+	"errors"
 )
 
 const(
@@ -155,6 +155,46 @@ type instruction struct{
 	
 	immediate int64
 	displacement int64
+}
+
+type Processor struct{
+	
+	instructions [128]*instruction
+	nInstructions uint16
+	
+	ip int
+	code []byte
+}
+
+func (p *Processor) loadCode(code []byte){
+	
+	p.code = code
+}
+
+func (p *Processor) run() error{
+	
+	for(p.ip < len(p.code)){
+		
+		instr := InstructionFromBytes(p.code[p.ip:len(p.code)])
+		if instr == nil{
+			
+			return errors.New(fmt.Sprintf("A reading error occurred at %v-th instruction. IP is at %v", p.nInstructions+1, p.ip))
+		}
+		p.instructions[p.nInstructions] = instr
+		p.nInstructions++
+		total_len := instr.nBytes + instr.opcode.immediateBytes + instr.opcode.displacementBytes
+		p.ip += (int)(total_len)
+//		fmt.Printf("instruction:%v, (%v, %v, %v)%v\n", instr.opcode.mnemonic, instr.nBytes, instr.opcode.immediateBytes, instr.opcode.displacementBytes, total_len)
+	}
+	return nil
+}
+
+func New() *Processor{
+	
+	p := new(Processor)
+	p.code = make([]byte, 0, 65536)
+	
+	return p
 }
 
 func FromSlice(bytes []byte) int64{
@@ -355,12 +395,12 @@ var opcodeMap = opcode_map{
 	0x35:{0x35, 0, 0, 1, RAX, NONE, "XOR", "", "", "", 0, 0, 0, 0},
 //	0x36:{0x36, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},seg SS
 //	0x37:{0x37, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},Invalid in 64-bit mode
-	0x38:{0x38, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},
-	0x39:{0x39, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},
-	0x3A:{0x3A, 0, 0, 1, REG, R_M, "", "", "", "", 0, 0, 0, 0},
-	0x3B:{0x3B, 0, 0, 1, REG, R_M, "", "", "", "", 0, 0, 0, 0},
-	0x3C:{0x3C, 0, 0, 1, AL, NONE, "", "", "", "", 0, 0, 0, 0},
-	0x3D:{0x3D, 0, 0, 1, RAX, NONE, "", "", "", "", 0, 0, 0, 0},
+	0x38:{0x38, 0, 0, 1, R_M, REG, "CMP", "", "", "", 0, 0, 0, 0},
+	0x39:{0x39, 0, 0, 9, R_M, REG, "CMP", "", "", "", 0, 0, 0, 0},
+	0x3A:{0x3A, 0, 0, 1, REG, R_M, "CMP", "", "", "", 0, 0, 0, 0},
+	0x3B:{0x3B, 0, 0, 9, REG, R_M, "CMP", "", "", "", 0, 0, 0, 0},
+	0x3C:{0x3C, 1, 0, 1, AL, NONE, "CMP", "", "", "", 0, 0, 0, 0},
+	0x3D:{0x3D, 9, 0, 1, RAX, NONE, "CMP", "", "", "", 0, 0, 0, 0},
 //	0x3E:{0x3E, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},seg DS
 //	0x3F:{0x3F, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},Invalid in 64-bit mode
 //	0x40:{0x40, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},0x4_ bytes are used as

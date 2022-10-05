@@ -1,0 +1,9 @@
+From my early years as an undergraduate student, I worked at the hospitality industry, primarily in building maintenance;
+From 2011 onwards I started learning PHP on my own, and developed an online reservation web app for a hotel;
+In 2015, I started a contractor company, working primarily in shopping centers;
+By October that year, I opened 2 franchises in the food service industry, in which, <elaborate>;
+In 2017 I began developing software for my own business in PHP, MySQL, JavaScript (and jQuery), HTML and CSS, and also native host clients in C, of which some of the code is available on my GitHub;
+
+Besides the languages above mentioned, I also have knowledge of Python, Ruby and Java. I am also a very good docs reader, and a quick learner.
+
+Besides Brazilian Portuguese, I am fluent in English and have advanced knowledge of French and Spanish.
