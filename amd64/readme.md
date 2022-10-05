@@ -14,7 +14,7 @@ And there came a more fundamental approach.
 
 The opcodes are now **opcode** structs, which can in turn, be mapped to values from 0-255.
 
-And in **Go**, the opcode byte map could finally be itself, a```Go map[byte]*opcode```.
+And in **Go**, the opcode byte map could finally be itself, a```map[byte]*opcode```.
 
 ## 1. The opcode struct
 
