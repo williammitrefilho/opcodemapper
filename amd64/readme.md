@@ -18,7 +18,7 @@ And in **Go**, the opcode byte map could finally be itself, a```map[byte]*opcode
 
 ## 1. The opcode struct
 
-The opcode struct is intended to be the primary building block of the opcode map. It contains informations about mnemonic, operand size, whether it needs extra bytes for arriving at the complete instruction, such as, in **i386** and **AMD64**, are the instruction prefixes, the **ModRM**, **SIB** bytes, 1-4 displacement and/or 1-8 immediate bytes. The fields in the struct are thus named accordingly.
+The opcode struct is intended to be the primary building block of the opcode map. It contains informations about mnemonic, operand size, whether it needs extra bytes for arriving at the complete instruction, such as, in **i386** and **AMD64**, are the instruction prefixes, the **ModRM**, **SIB** bytes, 0-4 displacement and/or 0-8 immediate bytes. The fields in the struct are thus named accordingly:
 
 ```Go
 type opcode struct{
