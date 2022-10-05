@@ -4,7 +4,7 @@ When the project came up, we believed we would, within a single battery cycle, b
 Not giving ourselves too much time to think away from the text editor screen, our preferred approach to implementing the AMD64 summed up to:
 
 1. Writing three methods, namely **setOpcode**, **setModRM** and **setSIBByte**.
-2. Go filling it with "if" statements until there was, inside the body, there could be found a block for every possible instruction byte (!).
+2. Go filling it with "if" statements until inside the body there could be found a block for every possible instruction byte (!).
 
 Roughly 30% of the way into implementing the primary opcode map, the three methods started becoming, even for our bright minds, extremely difficult to read.
 
