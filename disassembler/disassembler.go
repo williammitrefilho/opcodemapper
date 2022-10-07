@@ -4,8 +4,11 @@ import (
 //	"modgo.com/what"
 	"strings"
 //	"fmt"
-//	"modgo.com/amd64"
+	"modgo.com/amd64"
+//	"errors"
 )
+
+type Instruction amd64.Instruction
 
 func toBytes(String string)[]byte{
 	
@@ -30,8 +33,16 @@ func toBytes(String string)[]byte{
 	return bytes[:nBytes]
 }
 
-func Disassemble(code string){
+func Disassemble(code string) ([]*amd64.Instruction, error){
 	
-//	istr := what.NewInstructionByteStream(toBytes(code))
+	p := amd64.New()
+	p.LoadCode(toBytes(code))
+	instrs, err := p.Run()
+	if err != nil{
+		
+		return nil, err
+	}
+	return instrs, nil
+	
 //	fmt.Printf("%v\n", istr)
 }

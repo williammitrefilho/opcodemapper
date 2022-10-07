@@ -1,4 +1,4 @@
-package amd64_1
+package amd64
 
 import(
 	"testing"
@@ -54,9 +54,9 @@ func TestSetModRM(t *testing.T){
 	}
 	opcode.setModRM(instructionBytes[2])
 	
-	if opcode.mnemonic != "MOV"{
+	if opcode.Mnemonic != "MOV"{
 		
-		t.Fatalf("opcode mnemonic: %v", opcode.mnemonic)
+		t.Fatalf("opcode Mnemonic: %v", opcode.Mnemonic)
 	}
 	if opcode.r_m != SIB{
 		
@@ -94,7 +94,7 @@ func TestFeedByte(t *testing.T){
 //		0x48, 0xF7, 0xD0,
 	}
 	
-	instr := new(instruction)
+	instr := new(Instruction)
 	r := instr.feedByte(instructionBytes[0])
 	if r != 1{
 		
@@ -105,7 +105,7 @@ func TestFeedByte(t *testing.T){
 		
 		t.Fatalf("r is %v", r)
 	}
-	if instr.opcode == nil{
+	if instr.Opcode == nil{
 		
 		t.Fatalf("opcode is nil")
 	}
@@ -114,13 +114,13 @@ func TestFeedByte(t *testing.T){
 		
 		t.Fatalf("r is %v", r)
 	}
-	if instr.opcode.needsModRM(){
+	if instr.Opcode.needsModRM(){
 		
 		t.Fatalf("instr still asking for ModRM")
 	}
-	if instr.opcode.r_m != SIB{
+	if instr.Opcode.r_m != SIB{
 		
-		t.Fatalf("instr's r_m field is %v", instr.opcode.r_m)
+		t.Fatalf("instr's r_m field is %v", instr.Opcode.r_m)
 	}
 	r = instr.feedByte(instructionBytes[3])
 	if r != 0{
@@ -131,17 +131,17 @@ func TestFeedByte(t *testing.T){
 		
 		t.Fatalf("instr is not finished")
 	}
-	if instr.opcode.r_m == SIB{
+	if instr.Opcode.r_m == SIB{
 		
 		t.Fatalf("instr's r_m field is still SIB")
 	}
-	if instr.opcode.displacementBytes != 1{
+	if instr.Opcode.displacementBytes != 1{
 		
-		t.Fatalf("instr's displacementBytes is %v", instr.opcode.displacementBytes)
+		t.Fatalf("instr's displacementBytes is %v", instr.Opcode.displacementBytes)
 	}
-	if instr.opcode.immediateBytes != 0{
+	if instr.Opcode.immediateBytes != 0{
 		
-		t.Fatalf("instr's immediateBytes is %v", instr.opcode.immediateBytes)
+		t.Fatalf("instr's immediateBytes is %v", instr.Opcode.immediateBytes)
 	}
 }
 
@@ -166,22 +166,22 @@ func TestInstructionFromBytes(t *testing.T){
 		
 		t.Fatalf("instruction is nil")
 	}
-	if instr.opcode.mnemonic != "NOT"{
+	if instr.Opcode.Mnemonic != "NOT"{
 		
-		t.Fatalf("mnemonic is %v", instr.opcode.mnemonic)
+		t.Fatalf("Mnemonic is %v", instr.Opcode.Mnemonic)
 	}
-	if instr.opcode.immediateBytes != 0{
+	if instr.Opcode.immediateBytes != 0{
 		
-		t.Fatalf("immediateBytes is %v", instr.opcode.immediateBytes)
+		t.Fatalf("immediateBytes is %v", instr.Opcode.immediateBytes)
 	}
-	total_len := instr.nBytes + instr.opcode.immediateBytes + instr.opcode.displacementBytes
+	total_len := instr.nBytes + instr.Opcode.immediateBytes + instr.Opcode.displacementBytes
 	if(total_len != 3){
 		
-		t.Fatalf("total len is %v (%v, %v, %v)", total_len, instr.nBytes, instr.opcode.immediateBytes, instr.opcode.displacementBytes)
+		t.Fatalf("total len is %v (%v, %v, %v)", total_len, instr.nBytes, instr.Opcode.immediateBytes, instr.Opcode.displacementBytes)
 	}
-	if instr.immediate != 0{
+	if instr.Immediate != 0{
 		
-		t.Fatalf("immediate is %x", instr.immediate)
+		t.Fatalf("immediate is %x", instr.Immediate)
 	}
 }
 
@@ -203,14 +203,14 @@ func TestProcessorRun(t *testing.T){
 		0x48, 0xF7, 0xD0,
 	}
 	p := New()
-	p.loadCode(instructionBytes)
-	err := p.run()
+	p.LoadCode(instructionBytes)
+	instrs, err := p.Run()
 	if(err != nil){
 		
 		t.Fatalf(err.Error())
 	}
-	if(p.nInstructions != 11){
+	if(len(instrs) != 11){
 		
-		t.Fatalf("there are %v instructions in the processor, and the IP is at %v", p.nInstructions, p.ip)
+		t.Fatalf("there are %v instructions in the processor, and the IP is at %v", len(instrs), p.ip)
 	}
 }

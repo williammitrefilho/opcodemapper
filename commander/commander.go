@@ -6,6 +6,7 @@ import(
 	"log"
 	"regexp"
 	"modgo.com/disassembler"
+	"modgo.com/amd64"
 )
 
 type Commander struct{
@@ -32,7 +33,7 @@ func Error(Message string) *CommanderError{
 	return cmdErr
 }
 
-func (c *Commander) EvaluateCode() *CommanderError{
+func (c *Commander) EvaluateCode() ([]*amd64.Instruction, *CommanderError){
 	
 	anyIntruder, err := regexp.MatchString("[^0-9A-Fa-f]", c.Code)
 	if err != nil{
@@ -41,21 +42,25 @@ func (c *Commander) EvaluateCode() *CommanderError{
 	}
 	if anyIntruder{
 		
-		return Error("There is an intruder")
+		return nil, Error("There is an intruder")
 	}
 	if (len(c.Code) % 2) > 0{
 		
-		return Error("Could you please 8-bit align?")
+		return nil, Error("Could you please 8-bit align?")
 	}
-	disassembler.Disassemble(c.Code)
-	return nil
+	instrs, err := disassembler.Disassemble(c.Code)
+	if err != nil{
+		
+		return nil, Error(err.Error())
+	}
+	return instrs, nil
 }
 
 func (c *Commander) Run() *CommanderResponse{
 	
 	if c.Code != ""{
 		
-		cmdErr := c.EvaluateCode()
+		instrs, cmdErr := c.EvaluateCode()
 		cr := new(CommanderResponse)
 		if(cmdErr != nil){
 			
@@ -64,6 +69,7 @@ func (c *Commander) Run() *CommanderResponse{
 			return cr
 		}
 		cr.ResultClass = "OK"
+		cr.Value = instrs
 		return cr
 	}
 	

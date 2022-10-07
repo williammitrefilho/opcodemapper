@@ -1,4 +1,4 @@
-package amd64_1
+package amd64
 
 import(
 	
@@ -52,7 +52,7 @@ type opcode struct{
 	dstOperand uint8// whether r/m, reg or imm
 	srcOperand uint8// whether r/m, mem or imm
 	
-	mnemonic string
+	Mnemonic string
 	
 	r_m_str string
 	reg_str string
@@ -80,13 +80,13 @@ func (opc *opcode) setModRM(b byte){
 	reg := (b&0x38) >> 3
 	r_m := b&0x7
 
-	if opc.mnemonic == ""{//The operation will be defined by the ModRM.reg field
+	if opc.Mnemonic == ""{//The operation will be defined by the ModRM.reg field
 		
 		extendedOp := extendedOpcodeMap[opc.opcode][reg]
 		old_opc := opc.opcode
 		*opc = *extendedOp
 		opc.opcode = old_opc
-		opc.mnemonic = extendedOp.mnemonic
+		opc.Mnemonic = extendedOp.Mnemonic
 		opc.dstOperand = extendedOp.dstOperand
 		opc.srcOperand = extendedOp.srcOperand
 
@@ -118,7 +118,7 @@ func (opc *opcode) setModRM(b byte){
 
 func (opc *opcode) needsModRM() bool{
 	
-	return opc.dstOperand == R_M || opc.srcOperand == R_M || opc.dstOperand == REG || opc.srcOperand == REG || opc.mnemonic == ""
+	return opc.dstOperand == R_M || opc.srcOperand == R_M || opc.dstOperand == REG || opc.srcOperand == REG || opc.Mnemonic == ""
 }
 
 func (opc *opcode) setSIBByte(b byte){
@@ -145,48 +145,48 @@ func (opc *opcode) setSIBByte(b byte){
 	}
 }
 
-type instruction struct{
+type Instruction struct{
 	
-	rEXPrefix byte
+	REXPrefix byte
 	bytes [32]byte
 	nBytes uint8
-	opcode *opcode
+	Opcode *opcode
 	finished bool
 	
-	immediate int64
-	displacement int64
+	Immediate int64
+	Displacement int64
 }
 
 type Processor struct{
 	
-	instructions [128]*instruction
+	Instructions [128]*Instruction
 	nInstructions uint16
 	
 	ip int
 	code []byte
 }
 
-func (p *Processor) loadCode(code []byte){
+func (p *Processor) LoadCode(code []byte){
 	
 	p.code = code
 }
 
-func (p *Processor) run() error{
+func (p *Processor) Run() ([]*Instruction, error){
 	
 	for(p.ip < len(p.code)){
 		
 		instr := InstructionFromBytes(p.code[p.ip:len(p.code)])
 		if instr == nil{
 			
-			return errors.New(fmt.Sprintf("A reading error occurred at %v-th instruction. IP is at %v", p.nInstructions+1, p.ip))
+			return nil, errors.New(fmt.Sprintf("A reading error occurred at %v-th Instruction. IP is at %v", p.nInstructions+1, p.ip))
 		}
-		p.instructions[p.nInstructions] = instr
+		p.Instructions[p.nInstructions] = instr
 		p.nInstructions++
-		total_len := instr.nBytes + instr.opcode.immediateBytes + instr.opcode.displacementBytes
+		total_len := instr.nBytes + instr.Opcode.immediateBytes + instr.Opcode.displacementBytes
 		p.ip += (int)(total_len)
-//		fmt.Printf("instruction:%v, (%v, %v, %v)%v\n", instr.opcode.mnemonic, instr.nBytes, instr.opcode.immediateBytes, instr.opcode.displacementBytes, total_len)
+//		fmt.Printf("Instruction:%v, (%v, %v, %v)%v\n", instr.Opcode.Mnemonic, instr.nBytes, instr.Opcode.immediateBytes, instr.Opcode.displacementBytes, total_len)
 	}
-	return nil
+	return p.Instructions[:p.nInstructions], nil
 }
 
 func New() *Processor{
@@ -207,7 +207,7 @@ func FromSlice(bytes []byte) int64{
 	return num
 }
 
-func (i *instruction) feedByte(b byte) uint8{
+func (i *Instruction) feedByte(b byte) uint8{
 	
 	if i.nBytes == 32{
 		
@@ -215,25 +215,25 @@ func (i *instruction) feedByte(b byte) uint8{
 	}
 	i.bytes[i.nBytes] = b
 	i.nBytes++
-	if i.opcode == nil{
+	if i.Opcode == nil{
 		
 		opc := opcodeMap[b]
 		if opc != nil{
 			
-			i.opcode = new(opcode)
-			*i.opcode = *opc
+			i.Opcode = new(opcode)
+			*i.Opcode = *opc
 
-			if i.opcode.immediateBytes == 9{
+			if i.Opcode.immediateBytes == 9{
 				
-				if i.rEXPrefix&0x8 > 0{
+				if i.REXPrefix&0x8 > 0{
 					
-					i.opcode.immediateBytes = 8
+					i.Opcode.immediateBytes = 8
 				} else{
 					
-					i.opcode.immediateBytes = 4
+					i.Opcode.immediateBytes = 4
 				}
 			}
-			if i.opcode.needsModRM(){
+			if i.Opcode.needsModRM(){
 				
 				return 1
 			}
@@ -243,16 +243,16 @@ func (i *instruction) feedByte(b byte) uint8{
 			
 			if (b&0xF0) == 0x40{
 				
-				i.rEXPrefix = b
+				i.REXPrefix = b
 			}
 			return 1
 		}
 	} else {
 		
-		if i.opcode.needsModRM(){
+		if i.Opcode.needsModRM(){
 			
-			i.opcode.setModRM(b)
-			if i.opcode.r_m == SIB{
+			i.Opcode.setModRM(b)
+			if i.Opcode.r_m == SIB{
 				
 				return 1
 			}
@@ -260,9 +260,9 @@ func (i *instruction) feedByte(b byte) uint8{
 			return 0
 		} else {
 			
-			if i.opcode.r_m == SIB{
+			if i.Opcode.r_m == SIB{
 				
-				i.opcode.setSIBByte(b)
+				i.Opcode.setSIBByte(b)
 				i.finished = true
 				return 0
 			}
@@ -271,9 +271,9 @@ func (i *instruction) feedByte(b byte) uint8{
 	return 0
 }
 
-func InstructionFromBytes(bytes []byte) *instruction{
+func InstructionFromBytes(bytes []byte) *Instruction{
 	
-	instr := new(instruction)
+	instr := new(Instruction)
 	i := 0
 	for i < len(bytes){
 		
@@ -288,22 +288,22 @@ func InstructionFromBytes(bytes []byte) *instruction{
 		
 		return nil
 	}
-	if instr.opcode.displacementBytes > 0 {
+	if instr.Opcode.displacementBytes > 0 {
 		
-		if (i + (int)(instr.opcode.displacementBytes)) > len(bytes){
+		if (i + (int)(instr.Opcode.displacementBytes)) > len(bytes){
 			
 			return nil
 		}
-		instr.displacement = FromSlice(bytes[i:i+(int)(instr.opcode.displacementBytes)])
-		i += (int)(instr.opcode.displacementBytes)
+		instr.Displacement = FromSlice(bytes[i:i+(int)(instr.Opcode.displacementBytes)])
+		i += (int)(instr.Opcode.displacementBytes)
 	}
-	if instr.opcode.immediateBytes > 0 {
+	if instr.Opcode.immediateBytes > 0 {
 		
-		if (i + (int)(instr.opcode.immediateBytes)) > len(bytes){
+		if (i + (int)(instr.Opcode.immediateBytes)) > len(bytes){
 			
 			return nil
 		}
-		instr.immediate = FromSlice(bytes[i:i+(int)(instr.opcode.immediateBytes)])
+		instr.Immediate = FromSlice(bytes[i:i+(int)(instr.Opcode.immediateBytes)])
 	}
 	
 	return instr
@@ -556,7 +556,7 @@ var opcodeMap = opcode_map{
 //	0xD8:{0xD8, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},
 //	0xD9:{0xD9, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},
 //	0xDA:{0xDA, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},0xD8 thru 0xDF
-//	0xDB:{0xDB, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},are x87 instructions,
+//	0xDB:{0xDB, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},are x87 Instructions,
 //	0xDC:{0xDC, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},yet to be implemented
 //	0xDD:{0xDD, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},
 //	0xDE:{0xDE, 0, 0, 1, R_M, REG, "", "", "", "", 0, 0, 0, 0},

@@ -2,8 +2,23 @@
 <html>
 	<head>
 		<title>Página teste</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Bootstrap demo</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 		<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
 		<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+		<style>
+			.form-codigo{
+				
+				max-width:500px;
+				padding:15px;
+			}
+			.btn-enviar{
+				
+				margin:10px
+			}
+		</style>
 		<script type="text/javascript">
 			function didLoad(){
 				
@@ -20,17 +35,17 @@
 			}
 		</script>
 	</head>
-	<body onload="didLoad()">
-		<form id="json-form" method="POST">
-			<table>
-				<tr>
-					<td><input type="text" name="byte_value"></td>
-				</tr>
-				<tr>
-					<td><button type="submit">Send</button></td>
-				</tr>
-			</table>
-		</form>
-		<div id="like_button_container"></div>
+	<body onload="didLoad()" class="text-center">
+		<main class="w-100 m-auto form-codigo">
+			<form id="json-form" method="POST">
+				<div><input type="text" class="form-control" name="byte_value"></div>
+				<div><button type="submit" class="btn-enviar mt-1 w-50 btn btn-lg btn-primary">Send</button></div>
+			</form>
+			<div class="d-flex justify-content-center">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		</main>
 	</body>
 </html>
